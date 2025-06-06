@@ -12,11 +12,11 @@ RESET PASSWORD/ OTP
 
 */
 
-import { Request, Response } from "express"
-import User from "../../../database/models/userModel"
-import bcrypt from 'bcrypt'
+import { Request, Response } from "express";
+import User from "../../../database/models/userModel";
+import bcrypt from "bcrypt";
 
-// json data --> req.body // username,email,password 
+// json data --> req.body // username,email,password
 // files --> req.file // files
 // const registerUser = async (req:Request,res:Response)=>{
 // //    const username = req.body.username
@@ -30,35 +30,33 @@ import bcrypt from 'bcrypt'
 //     })
 //     return
 //    }
-//     // insert into Users table 
+//     // insert into Users table
 //     await User.create({
-//         username :username, 
-//         password : password, 
+//         username :username,
+//         password : password,
 //         email : email
 //     })
 //     res.status(200).json({
 //         message : "User registered successfully"
 //     })
 
-
-// } // function 
+// } // function
 // BOLA Attack
-
 
 class AuthController {
     static async registerUser(req: Request, res: Response) {
         if (req.body == undefined) {
             res.status(400).json({
-                message: "No data was sent!!"
-            })
-            return
+                message: "No data was sent!!",
+            });
+            return;
         }
-        const { username, password, email } = req.body
+        const { username, password, email } = req.body;
         if (!username || !password || !email) {
             res.status(400).json({
-                message: "Please provide username, password, email"
-            })
-            return
+                message: "Please provide username, password, email",
+            });
+            return;
         }
         //    const [data] =  await User.findAll({
         //         where : {
@@ -66,66 +64,68 @@ class AuthController {
         //         }
         //     })
         //     if(data){
-        //         // already exists with that email 
+        //         // already exists with that email
         //     }
-        // insert into Users table 
+        // insert into Users table
         await User.create({
             username: username,
             password: bcrypt.hashSync(password, 12),
-            email: email
-        })
+            email: email,
+        });
         res.status(201).json({
-            message: "User registered successfully"
-        })
+            message: "User registered successfully",
+        });
     }
 
     //login user
+
+    /*
+  Login flow
+  email/username, password (basics)
+  email, password -> data accept -> validation
+      */
     static async loginUser(req: Request, res: Response) {
         if (req.body == undefined) {
             res.status(400).json({
-                message: "No data was sent!!"
-            })
+                message: "No data was sent!!",
+            });
         }
-        return
+        return;
 
-        const { email, password } = req.body
+        const { email, password } = req.body;
         if (!email || !password) {
             res.status(400).json({
-                message: "Please provide email and password!"
-            })
+                message: "Please provide email or password!",
+            });
         }
 
-        //check email
-        const [data] = await User.findAll({
+        //check email exist on table or not
+        const [data] = await User.findAll({ //findAll returns array
             where: {
                 email
-            }
-        })
+            },
+        });
 
         if (data) {
-            const isMatched = bcrypt.compareSync(password, data.password)
+            //check password
+            const isMatched = bcrypt.compareSync(password, data.password);
 
             if (isMatched) {
                 //generate token
                 res.status(200).json({
-                    message: "Login Successfully!"
-                })
+                    message: "Login Successfully!",
+                });
             } else {
-                res.status(400).json({
-                    message: "Invalid password!"
-                })
+                res.status(403).json({
+                    message: "Invalid email or password!",
+                });
             }
-
         } else {
-            res.status(400).json({
-                message: "email not registered!"
-            })
+            res.status(403).json({
+                message: "Creadentials didn't matched!",
+            });
         }
-
     }
 }
 
-export default AuthController
-
-
-// export  {registerUser}
+export default AuthController;
