@@ -113,6 +113,7 @@ class AuthController {
             if (isMatched) {
                 //generate token
                 res.status(200).json({
+                    token: "fdfj",
                     message: "Login Successfully!",
                 });
             } else {
