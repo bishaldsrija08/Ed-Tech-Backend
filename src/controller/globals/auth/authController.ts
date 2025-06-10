@@ -113,12 +113,12 @@ class AuthController {
 
             if (isMatched) {
                 //generate token
-                const token = jwt.sign({ id: data.id }, "secredKey", {
-                    expiresIn: '90d'
+                const token = jwt.sign({ id: data.id}, "secredKey", {
+                    expiresIn: '30d'
                 })
                 res.status(200).json({
                     token,
-                    message: "Login Successfully!",
+                    message: "Logged in Successfully!"
                 });
             } else {
                 res.status(403).json({
