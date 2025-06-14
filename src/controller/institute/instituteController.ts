@@ -1,8 +1,17 @@
 import { Request, Response } from "express";
 import sequelize from "../../database/connection";
 import generateRandomInstituteNumber from "../../services/generateRandomInstituteNumber";
+
+interface IExtendedRequest extends Request {
+    user?: {
+        email: string,
+        role: string,
+        userName: string | null
+    }
+}
 class InstituteController {
-    static async createInstitute(req: Request, res: Response) {
+    static async createInstitute(req: IExtendedRequest, res: Response) {
+        console.log("middleware bata ako", req.user)
         const { instituteName, instituteEmail, institutePhoneNumber, instituteAddress } = req.body
 
         //vat wa pan na aye null set garne
@@ -36,17 +45,19 @@ class InstituteController {
             replacements: [instituteName, instituteEmail, institutePhoneNumber, instituteAddress, instituteVatNumber, institutePanNumber]
         })
 
-        await sequelize.query(`CREATE TABLE teacher_${instituteNumber}(
-            id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-            teacherName VARCHAR(255) NOT NULL, 
-            teacherEmail VARCHAR(255) NOT NULL UNIQUE, 
-            teacherPhoneNumber VARCHAR(255) NOT NULL UNIQUE
-            )`)
-
         res.status(200).json({
             message: "Created successfully"
         })
     }
+
+    // static async createTeacherTable(req: Request, res: Response) {
+    //     await sequelize.query(`CREATE TABLE teacher_${instituteNumber}(
+    //         id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+    //         teacherName VARCHAR(255) NOT NULL, 
+    //         teacherEmail VARCHAR(255) NOT NULL UNIQUE, 
+    //         teacherPhoneNumber VARCHAR(255) NOT NULL UNIQUE
+    //         )`)
+    // }
 }
 
 export default InstituteController
