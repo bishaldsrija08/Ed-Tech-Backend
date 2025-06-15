@@ -1,19 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken'
 import User from "../database/models/userModel";
-interface IExtendedRequest extends Request {
-    user?: {
-        email: string,
-        role: string,
-        username: string | null
-    }
-}
-
-
+import IExtendedRequest from "./type";
 class Middleware {
 
     static isLoggedIn(req: IExtendedRequest, res: Response, next: NextFunction) {
-        const name = "Bishal Rijal"
         //check if login or not
         //token accept
         const token = req.headers.authorization
@@ -45,7 +36,8 @@ class Middleware {
                         message: "No user with that id, invalid token."
                     })
                 } else {
-                    req.user=userData
+                    req.user = userData
+                    // console.log(userData, "naya request gareko")
                     next()
                 }
             }

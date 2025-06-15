@@ -1,7 +1,7 @@
-import { Request } from "express";
+// import { Request } from "express";
 
-interface IExtendedRequest extends Request {
-    user:{
-        id:string,
-    }
-}
+// interface IExtendedRequest extends Request {
+//     user:{
+//         id:string,
+//     }
+// }

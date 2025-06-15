@@ -1,17 +1,12 @@
-import { Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import sequelize from "../../database/connection";
 import generateRandomInstituteNumber from "../../services/generateRandomInstituteNumber";
+import IExtendedRequest from "../../middleware/type";
+import User from "../../database/models/userModel";
 
-interface IExtendedRequest extends Request {
-    user?: {
-        email: string,
-        role: string,
-        userName: string | null
-    }
-}
 class InstituteController {
-    static async createInstitute(req: IExtendedRequest, res: Response) {
-        console.log("middleware bata ako", req.user)
+    static async createInstitute(req: IExtendedRequest, res: Response, next: NextFunction) {
+        // console.log("middleware bata ako", req.user)
         const { instituteName, instituteEmail, institutePhoneNumber, instituteAddress } = req.body
 
         //vat wa pan na aye null set garne
@@ -45,19 +40,68 @@ class InstituteController {
             replacements: [instituteName, instituteEmail, institutePhoneNumber, instituteAddress, instituteVatNumber, institutePanNumber]
         })
 
+        // to create user_institute history table jaha chai users le k k institute haru create garyo sabai ko number basnu paryo 
+        await sequelize.query(`CREATE TABLE IF NOT EXISTS user_institute(
+            id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+            userId VARCHAR(255) REFERENCES users(id), 
+            instituteNumber INT UNIQUE 
+            )`)
+
+        if (req.user) {
+            await sequelize.query(`INSERT INTO user_institute(userId,instituteNumber) VALUES(?,?)`, {
+                replacements: [req.user.id, instituteNumber]
+            })
+
+            await User.update({
+                currentInstituteNumber: instituteNumber,
+                role: "institute"
+            }, {
+                where: {
+                    id: req.user.id
+                }
+            })
+            req.instituteNumber = instituteNumber
+            next()
+        }
+    }
+
+    static async createTeacherTable(req: IExtendedRequest, res: Response, next: NextFunction) {
+        const { instituteNumber } = req
+        console.log(instituteNumber, "Hello hi how are y0ou?")
+        await sequelize.query(`CREATE TABLE teacher_${instituteNumber}(
+                    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+                    teacherName VARCHAR(255) NOT NULL, 
+                    teacherEmail VARCHAR(255) NOT NULL UNIQUE, 
+                    teacherPhoneNumber VARCHAR(255) NOT NULL UNIQUE
+                    )`)
+        next()
+
+    }
+
+    static async createStudentTable(req: IExtendedRequest, res: Response, next: NextFunction) {
+        const { instituteNumber } = req
+        await sequelize.query(`CREATE TABLE IF NOT EXISTS student_${instituteNumber}(
+        id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+        studentName VARCHAR(255) NOT NULL, 
+        studentPhoneNo VARCHAR(255) NOT NULL UNIQUE
+        )`)
+        next()
+    }
+
+    static async createCourseTable(req: IExtendedRequest, res: Response, next: NextFunction) {
+        const instituteNumber = req.instituteNumber
+        console.log(instituteNumber, "yo number ho")
+        await sequelize.query(`CREATE TABLE IF NOT EXISTS course_${instituteNumber}(
+        id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        courseName VARCHAR(255) NOT NULL UNIQUE, 
+        coursePrice VARCHAR(255) NOT NULL
+        )`)
+
         res.status(200).json({
-            message: "Created successfully"
+            message: "Institute created vayoo!!!",
+            instituteNumber,
         })
     }
 
-    // static async createTeacherTable(req: Request, res: Response) {
-    //     await sequelize.query(`CREATE TABLE teacher_${instituteNumber}(
-    //         id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-    //         teacherName VARCHAR(255) NOT NULL, 
-    //         teacherEmail VARCHAR(255) NOT NULL UNIQUE, 
-    //         teacherPhoneNumber VARCHAR(255) NOT NULL UNIQUE
-    //         )`)
-    // }
 }
-
 export default InstituteController
