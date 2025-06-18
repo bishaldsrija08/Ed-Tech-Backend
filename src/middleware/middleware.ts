@@ -1,48 +1,50 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import User from "../database/models/userModel";
 import IExtendedRequest from "./type";
+
 class Middleware {
 
     static isLoggedIn(req: IExtendedRequest, res: Response, next: NextFunction) {
-        //check if login or not
-        //token accept
-        const token = req.headers.authorization
+        const token = req.headers.authorization;
+
         if (!token) {
             res.status(400).json({
                 message: "Please provide token"
-            })
-            return
+            });
+            return;
         }
-        //token verify garne
+
         jwt.verify(token, "secredKey", async (error, success: any) => {
             if (error) {
+                console.error("JWT verification error:", error);
                 res.status(403).json({
-                    message: "Inavlid token, Please login to create institute."
-                })
+                    message: "Invalid token, please login to create institute."
+                });
             } else {
-                console.log("login vayo", success)
-                const userData = await User.findByPk(success.id)
-                // findbypk returns object
-
-                //findAll returns array
-                // const userData = await User.findAll({
-                //     where: {
-                //         id: success.id
-                //     }
-                // })
-                if (!userData) {
-                    res.status(403).json({
-                        message: "No user with that id, invalid token."
+                try {
+                    console.log("Login successful:", success);
+                    const userData = await User.findByPk(success.id, {
+                        attributes: ['id', 'currentInstituteNumber']
                     })
-                } else {
-                    req.user = userData
-                    // console.log(userData, "naya request gareko")
-                    next()
+
+                    if (!userData) {
+                        res.status(403).json({
+                            message: "No user with that ID, invalid token."
+                        });
+                    } else {
+                        req.user = userData;
+                        next();
+                    }
+                } catch (err) {
+                    console.error("Database error:", err);
+                    res.status(500).json({
+                        message: "Internal server error"
+                    });
                 }
             }
-        })
+        });
     }
 }
 
-export default Middleware
+export default Middleware;
