@@ -15,7 +15,7 @@ class CourseController {
 
         const courseThumbnail = null
 
-        await sequelize.query(`INSERT INTO course_${instituteNumber} (courseName, coursePrice, courseDuration, courseThumbnail, courseDescription, courseLevel) VALUES (?,?,?,?,?)`, {
+        await sequelize.query(`INSERT INTO course_${instituteNumber} (courseName, coursePrice, courseDuration, courseThumbnail, courseDescription, courseLevel) VALUES (?,?,?,?,?,?)`, {
             replacements: [courseName, coursePrice, courseDuration, courseThumbnail, courseDescription, courseLevel]
         })
 

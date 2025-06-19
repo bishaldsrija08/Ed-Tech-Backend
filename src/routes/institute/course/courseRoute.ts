@@ -5,7 +5,8 @@ import asyncErrorHandler from "../../../services/asyncErrorHandler"
 const router: Router = express.Router()
 
 
-router.route("/").post(asyncErrorHandler(CourseController.createCourse)).get(CourseController.getAllCourses)
+router.route("/").post(Middleware.isLoggedIn, asyncErrorHandler(CourseController.createCourse)).get(CourseController.getAllCourses)
 router.route("/:id").get(CourseController.getSingleCourse)
 router.route("/:id").delete(Middleware.isLoggedIn, asyncErrorHandler(CourseController.deleteCourse))
+
 export default router
