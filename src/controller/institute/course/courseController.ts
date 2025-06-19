@@ -6,14 +6,13 @@ class CourseController {
     static async createCourse(req: IExtendedRequest, res: Response) {
         const { courseName, coursePrice, courseDuration, courseDescription, courseLevel } = req.body
         const instituteNumber = req.user?.currentInstituteNumber
-
-        if (!courseName || !coursePrice || !courseDuration || !courseDescription || !courseLevel) {
-            return res.json({
+        const courseThumbnail = req.file?.filename
+        
+        if (!courseName || !coursePrice || !courseDuration || !courseDescription || !courseLevel || !courseThumbnail) {
+            return res.status(404).json({
                 message: "Please provide all the details off course!"
             })
         }
-
-        const courseThumbnail = null
 
         await sequelize.query(`INSERT INTO course_${instituteNumber} (courseName, coursePrice, courseDuration, courseThumbnail, courseDescription, courseLevel) VALUES (?,?,?,?,?,?)`, {
             replacements: [courseName, coursePrice, courseDuration, courseThumbnail, courseDescription, courseLevel]

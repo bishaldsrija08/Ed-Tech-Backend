@@ -161,7 +161,7 @@ class InstituteController {
     courseDuration VARCHAR(100),
     courseLevel ENUM('beginner', 'intermediate', 'advanced') NOT NULL,
     courseDescription TEXT,
-    courseThumbnail VARCHAR(200),
+    courseThumbnail VARCHAR(255),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )`);
