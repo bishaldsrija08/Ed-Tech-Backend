@@ -3,6 +3,7 @@ import sequelize from "../../database/connection";
 import generateRandomInstituteNumber from "../../services/generateRandomInstituteNumber";
 import IExtendedRequest from "../../middleware/type";
 import User from "../../database/models/userModel";
+import categories from "../../seed";
 
 class InstituteController {
     static async createInstitute(
@@ -38,7 +39,7 @@ class InstituteController {
             const instituteNumber = generateRandomInstituteNumber();
 
             await sequelize.query(`CREATE TABLE IF NOT EXISTS institute_${instituteNumber} (
-                id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
                 instituteName VARCHAR(255) NOT NULL,
                 instituteEmail VARCHAR(255) NOT NULL UNIQUE,
                 institutePhoneNumber VARCHAR(255) NOT NULL,
@@ -64,7 +65,7 @@ class InstituteController {
             );
 
             await sequelize.query(`CREATE TABLE IF NOT EXISTS user_institute(
-                id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+                id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()), 
                 userId VARCHAR(255) REFERENCES users(id), 
                 instituteNumber INT UNIQUE 
             )`);
@@ -107,7 +108,7 @@ class InstituteController {
             const { instituteNumber } = req;
             console.log(instituteNumber, "Hello hi how are y0ou?");
             await sequelize.query(`CREATE TABLE teacher_${instituteNumber}(
-                    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()), 
     teacherName VARCHAR(255) NOT NULL, 
     teacherEmail VARCHAR(255) NOT NULL UNIQUE, 
     teacherPhoneNumber VARCHAR(255) NOT NULL UNIQUE,
@@ -132,7 +133,7 @@ class InstituteController {
         try {
             const { instituteNumber } = req;
             await sequelize.query(`CREATE TABLE IF NOT EXISTS student_${instituteNumber}(
-    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()), 
     studentName VARCHAR(255) NOT NULL, 
     studentPhoneNo VARCHAR(255) NOT NULL UNIQUE,
     studentAddress TEXT,
@@ -158,12 +159,12 @@ class InstituteController {
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )`)
 
-        // categories.forEach(async function (category) {
-        //     await sequelize.query(`INSERT INTO category_${instituteNumber}(categoryName,categoryDescription) VALUES(?,?)`, {
-        //         replacements: [category.categoryName, category.categoryDescription]
-        //     })
+        categories.forEach(async function (category) {
+            await sequelize.query(`INSERT INTO category_${instituteNumber}(categoryName,categoryDescription) VALUES(?,?)`, {
+                replacements: [category.categoryName, category.categoryDescription]
+            })
 
-        // })
+        })
         next()
 
     }
@@ -174,12 +175,13 @@ class InstituteController {
     ) {
         const instituteNumber = req.instituteNumber;
         await sequelize.query(`CREATE TABLE IF NOT EXISTS course_${instituteNumber}(
-    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
     courseName VARCHAR(255) NOT NULL UNIQUE, 
     coursePrice VARCHAR(255) NOT NULL,
     courseDuration VARCHAR(100),
     courseLevel ENUM('beginner', 'intermediate', 'advanced') NOT NULL,
     courseDescription TEXT,
+    categoryId VARCHAR(36) NOT NULL REFERENCES category_${instituteNumber} (id),
     courseThumbnail VARCHAR(255),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

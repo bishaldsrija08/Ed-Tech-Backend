@@ -24,8 +24,8 @@ const upload = multer({storage : storage,
 // const upload = multer({ storage: storage })
 const router: Router = express.Router()
 
-router.route("/").post(Middleware.isLoggedIn, upload.single('courseThumbnail'), asyncErrorHandler(CourseController.createCourse)).get(CourseController.getAllCourses)
-router.route("/:id").get(CourseController.getSingleCourse)
+router.route("/").post(Middleware.isLoggedIn, upload.single('courseThumbnail'), asyncErrorHandler(CourseController.createCourse)).get(Middleware.isLoggedIn, asyncErrorHandler(CourseController.getAllCourses))
+router.route("/:id").get(Middleware.isLoggedIn, asyncErrorHandler(CourseController.getSingleCourse))
 router.route("/:id").delete(Middleware.isLoggedIn, asyncErrorHandler(CourseController.deleteCourse))
 
 export default router
