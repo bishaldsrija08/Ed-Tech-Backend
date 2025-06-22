@@ -148,10 +148,29 @@ class InstituteController {
         }
     }
 
+    static async createCategoryTable(req: IExtendedRequest, res: Response, next: NextFunction) {
+        const instituteNumber = req.instituteNumber;
+        await sequelize.query(`CREATE TABLE IF NOT EXISTS category_${instituteNumber}(
+        id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+        categoryName VARCHAR(100) NOT NULL, 
+        categoryDescription TEXT,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )`)
+
+        // categories.forEach(async function (category) {
+        //     await sequelize.query(`INSERT INTO category_${instituteNumber}(categoryName,categoryDescription) VALUES(?,?)`, {
+        //         replacements: [category.categoryName, category.categoryDescription]
+        //     })
+
+        // })
+        next()
+
+    }
+
     static async createCourseTable(
         req: IExtendedRequest,
-        res: Response,
-        next: NextFunction
+        res: Response
     ) {
         const instituteNumber = req.instituteNumber;
         await sequelize.query(`CREATE TABLE IF NOT EXISTS course_${instituteNumber}(
@@ -171,6 +190,7 @@ class InstituteController {
             instituteNumber,
         });
     }
+
 }
 
 export default InstituteController;

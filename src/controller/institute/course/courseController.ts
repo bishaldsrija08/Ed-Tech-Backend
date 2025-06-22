@@ -6,7 +6,7 @@ class CourseController {
     static async createCourse(req: IExtendedRequest, res: Response) {
         const { courseName, coursePrice, courseDuration, courseDescription, courseLevel } = req.body
         const instituteNumber = req.user?.currentInstituteNumber
-        const courseThumbnail = req.file?.filename
+        const courseThumbnail = req.file?.path
         
         if (!courseName || !coursePrice || !courseDuration || !courseDescription || !courseLevel || !courseThumbnail) {
             return res.status(404).json({
