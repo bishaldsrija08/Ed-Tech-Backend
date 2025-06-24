@@ -1,5 +1,7 @@
+
+
 import multer from 'multer'
-import {cloudinary,storage} from './../services/cloudinaryConfig'
+import storage from "./../services/cloudinaryConfig"
 import { Request } from 'express'
 const upload = multer({storage : storage, 
 
