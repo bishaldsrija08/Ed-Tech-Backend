@@ -3,6 +3,7 @@ import IExtendedRequest from "../../../middleware/type";
 import sequelize from "../../../database/connection";
 import { QueryTypes } from "sequelize";
 import generateRandomPassword from "../../../services/generateRandomPassword";
+import sendMail from "../../../services/sendMail";
 
 class TeacherController {
     static async createTeacher(req: IExtendedRequest, res: Response) {
@@ -32,8 +33,13 @@ class TeacherController {
             replacements: [teacherData[0].id, courseId]
         })
 
-        //send mail
-
+        // send mail function goes here 
+        const mailInformation = {
+            to: teacherEmail,
+            subject: "Welcome to our Platform.",
+            text: `Welcome xa hai, <b>Email</b> : ${teacherEmail}, Password : ${data.plainVersion}`
+        }
+        await sendMail(mailInformation)
 
         res.status(200).json({
             message: "teacher created successfully"

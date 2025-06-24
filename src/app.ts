@@ -18,6 +18,4 @@ app.use("/api/institute/category", categoryRoute)
 app.use("/api/institute/teacher", teacherRoute)
 
 
-
-
 export default app
