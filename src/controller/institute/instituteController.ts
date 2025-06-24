@@ -112,9 +112,11 @@ class InstituteController {
     teacherName VARCHAR(255) NOT NULL, 
     teacherEmail VARCHAR(255) NOT NULL UNIQUE, 
     teacherPhoneNumber VARCHAR(255) NOT NULL UNIQUE,
+    teacherPassword VARCHAR(255) NOT NULL,
     teacherExpertise VARCHAR(252),
     salary VARCHAR(255),
     joinDate DATE,
+    teacherPhoto VARCHAR(255),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )`);
