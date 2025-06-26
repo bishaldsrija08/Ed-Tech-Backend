@@ -37,15 +37,13 @@ class TeacherController {
         const mailInformation = {
             to: teacherEmail,
             subject: "Welcome to our Platform.",
-            text: `Welcome xa hai, <b>Email</b> : ${teacherEmail}, Password : ${data.plainVersion}`
+            text: `Welcome xa hai, <b>Email</b> : ${teacherEmail}, Password : ${data.plainVersion}, your institute number is : ${instituteNumber}`
         }
         await sendMail(mailInformation)
 
         res.status(200).json({
             message: "teacher created successfully"
         })
-
-
 
     }
 

@@ -28,6 +28,4 @@ const sendMail = async (mailInformation: IMailInformation) => {
     }
 }
 
-
-
 export default sendMail;

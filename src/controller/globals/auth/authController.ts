@@ -15,7 +15,7 @@ RESET PASSWORD/ OTP
 import { Request, Response } from "express";
 import User from "../../../database/models/userModel";
 import bcrypt from "bcrypt";
-import jwt from 'jsonwebtoken'
+import generateJWTToken from "../../../services/generateJWTToken";
 
 // json data --> req.body // username,email,password
 // files --> req.file // files
@@ -113,9 +113,9 @@ class AuthController {
 
             if (isMatched) {
                 //generate token
-                const token = jwt.sign({ id: data.id}, "secredKey", {
-                    expiresIn: '30d'
-                })
+                const token = generateJWTToken({
+                    id: data.id
+                });
                 res.status(200).json({
                     token,
                     message: "Logged in Successfully!"
