@@ -15,7 +15,7 @@ class Middleware {
             return;
         }
 
-        jwt.verify(token, "secredKey", async (error, success: any) => {
+        jwt.verify(token, process.env.JWT_SECRET as string, async (error, success: any) => {
             if (error) {
                 console.error("JWT verification error:", error);
                 res.status(403).json({
@@ -23,8 +23,7 @@ class Middleware {
                 });
             } else {
                 try {
-                    console.log("Login successful:", success);
-                    const userData = await User.findByPk(success.id, {
+                    const userData = await User.findByPk(success.data.id, {
                         attributes: ['id', 'currentInstituteNumber']
                     })
 

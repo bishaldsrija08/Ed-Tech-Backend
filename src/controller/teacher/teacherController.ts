@@ -11,8 +11,6 @@ interface ITeacherData {
     id: string
 }
 
-
-
 class TeacherController {
     // Teacher login implementation
     static async teacherLogin(req: Request, res: Response) {
